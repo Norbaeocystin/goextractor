@@ -8,6 +8,7 @@ var Ids2name = map[string]string{
 	"linkedin":  "linkedin",
 	"medium":    "medium",
 	"meetup":    "meetup",
+	"pinterest": "pinterest",
 	"reddit":    "reddit",
 	"t.me":      "telegram",
 	"twitter":   "twitter",
