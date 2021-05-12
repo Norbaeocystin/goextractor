@@ -37,6 +37,7 @@ func Extract(doc *goquery.Document, ids2name map[string]string) map[string][]str
 	return results
 }
 
+// Clean href and returns just domain
 func Clean(href string) string {
 	href = strings.TrimPrefix(href, "https://")
 	href = strings.TrimPrefix(href, "http://")
@@ -49,6 +50,7 @@ func Clean(href string) string {
 	return href
 }
 
+// Removes paramaters and hashtag stuff
 func CleanLink(href string) string {
 	for _, char := range []string{"?","#"}{
 		if strings.Contains(href, char){
