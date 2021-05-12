@@ -3,7 +3,7 @@ package goextractor
 var Ids2name = map[string]string{
 	/*  TODO
 	add vkontak, weibo, weechat
-	 */
+	*/
 	"discord":   "discord",
 	"facebook":  "facebook",
 	"github":    "github",

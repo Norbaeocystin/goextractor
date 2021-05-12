@@ -1,6 +1,8 @@
 package goextractor
 
 import (
+	"context"
+	"github.com/chromedp/chromedp"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -13,6 +15,8 @@ var HeadersDefault = map[string][]string{
 
 // Change if you want
 const timeout = 20
+
+const timeoutChromeMS = 2000
 
 //Send get request method. Returns bytes and error, hard coded timeout 20 secods
 func GetWithHeaders(urlstring string, headers map[string][]string) ([]byte, error) {
@@ -31,3 +35,34 @@ func GetWithHeaders(urlstring string, headers map[string][]string) ([]byte, erro
 	defer response.Body.Close()
 	return bodyBytes, err
 }
+
+// Returns html as string - opens and close chrome
+func GetByChrome(urlstring string) (string, error) {
+	var html string
+	//timeout in seconds
+	// timeout := 120 * time.Second
+	opts := chromedp.DefaultExecAllocatorOptions[:]
+	opts = append(chromedp.DefaultExecAllocatorOptions[:],
+		chromedp.Flag("headless", true),
+		chromedp.WindowSize(1920, 1080),
+		chromedp.NoFirstRun,
+		//verify certificate false
+		chromedp.Flag("ignore-certificate-errors", true),
+		chromedp.NoDefaultBrowserCheck,
+	)
+	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
+	defer cancel()
+	ctx, cancel := chromedp.NewContext(allocCtx)
+	defer cancel()
+	//ctxwt, cancel := context.WithTimeout(ctx, timeout)
+	//defer cancel()
+	err := chromedp.Run(ctx,
+		chromedp.Navigate(urlstring),
+		chromedp.Sleep(timeoutChromeMS*time.Millisecond),
+		chromedp.OuterHTML("html", &html),
+		// chromedp.Sleep(time.Hour),
+	)
+	return html, err
+
+}
+

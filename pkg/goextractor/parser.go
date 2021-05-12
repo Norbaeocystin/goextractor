@@ -42,8 +42,8 @@ func Clean(href string) string {
 	href = strings.TrimPrefix(href, "https://")
 	href = strings.TrimPrefix(href, "http://")
 	href = strings.TrimPrefix(href, "www.")
-	for _, char := range []string{"/","?","#"}{
-		if strings.Contains(href, char){
+	for _, char := range []string{"/", "?", "#"} {
+		if strings.Contains(href, char) {
 			href = strings.SplitN(href, char, 2)[0]
 		}
 	}
@@ -52,8 +52,8 @@ func Clean(href string) string {
 
 // Removes paramaters and hashtag stuff
 func CleanLink(href string) string {
-	for _, char := range []string{"?","#"}{
-		if strings.Contains(href, char){
+	for _, char := range []string{"?", "#"} {
+		if strings.Contains(href, char) {
 			href = strings.SplitN(href, char, 2)[0]
 		}
 	}
