@@ -65,4 +65,3 @@ func GetByChrome(urlstring string) (string, error) {
 	return html, err
 
 }
-

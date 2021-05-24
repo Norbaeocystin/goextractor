@@ -22,13 +22,18 @@ func Extract(doc *goquery.Document, ids2name map[string]string) map[string][]str
 		for id, name := range ids2name {
 			if strings.Contains(hrefClean, id) {
 				result, ok := results[name]
-				href = CleanLink(href)
+				chref := CleanLink(href)
+
+				if id == "play.google.com" {
+					chref = href
+				}
+
 				if ok {
-					result = append(result, href)
+					result = append(result, chref)
 					results[name] = result
 				} else {
 					results[name] = []string{
-						href,
+						chref,
 					}
 				}
 			}
