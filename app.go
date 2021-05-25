@@ -1,37 +1,58 @@
 package main
 
 import (
+	"bufio"
+	"flag"
+	"fmt"
 	"goextractor/pkg/goextractor"
 	"log"
+	"os"
+	"strings"
 )
 
 func main() {
-	// b, _ := goextractor.GetWithHeaders("https://mdex.com/#/", goextractor.HeadersDefault)
-	s, _ := goextractor.GetByChrome("https://evodefi.com/")
-	doc, _ := goextractor.GetDoc([]byte(s))
-	results := goextractor.Extract(doc, goextractor.Ids2name)
-	for k, v := range results {
-		log.Println(k, v)
+	// https://binance.org
+	url := flag.String("url", "", "url to scrap")
+	file := flag.String("file", "", "file to use to fetch urls")
+	chrome := flag.Bool("chrome",false, "use chrome ")
+	flag.Parse()
+	if *url != "" && *file == ""{
+		// b, _ := goextractor.GetWithHeaders("https://mdex.com/#/", goextractor.HeadersDefault)
+		var data map[string]interface{}
+		if *chrome {
+			data = goextractor.GetDataViaChrome(*url)
+		}else {
+			data = goextractor.GetData(*url)
+		}
+		fmt.Println(data)
+		txt := goextractor.GetString([]map[string]interface{}{data})
+		fmt.Println(txt)
 	}
+	if *file != ""{
+		f, err := os.Open(*file)
+		if err != nil {
+			log.Println(err)
+		}
+		defer f.Close()
 
-	s, _ = goextractor.GetByChrome("https://polygaj.finance/")
-	doc, _ = goextractor.GetDoc([]byte(s))
-	results = goextractor.Extract(doc, goextractor.Ids2name)
-	for k, v := range results {
-		log.Println(k, v)
-	}
+		results := make([]map[string]interface{},0)
 
-	s, _ = goextractor.GetByChrome("https://binance.org")
-	doc, _ = goextractor.GetDoc([]byte(s))
-	results = goextractor.Extract(doc, goextractor.Ids2name)
-	for k, v := range results {
-		log.Println(k, v)
-	}
-
-	s, _ = goextractor.GetByChrome("https://aave.com/")
-	doc, _ = goextractor.GetDoc([]byte(s))
-	results = goextractor.Extract(doc, goextractor.Ids2name)
-	for k, v := range results {
-		log.Println(k, v)
+		scanner := bufio.NewScanner(f)
+		for scanner.Scan() {
+			line := scanner.Text()
+			if strings.Contains(line, "https://") || strings.Contains(line, "http://"){
+				var data map[string]interface{}
+				if *chrome {
+					data = goextractor.GetDataViaChrome(line)
+				}else {
+					data = goextractor.GetData(*url)
+				}
+				if len(data) > 0{
+					results = append(results, data)
+				}
+			}
+		}
+		txt := goextractor.GetString(results)
+		fmt.Println(txt)
 	}
 }
