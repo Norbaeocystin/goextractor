@@ -40,7 +40,7 @@ func GetWithHeaders(urlstring string, headers map[string][]string) ([]byte, erro
 func GetByChrome(urlstring string) (string, error) {
 	var html string
 	//timeout in seconds
-	// timeout := 120 * time.Second
+	timeoutCh := 3 * time.Second
 	opts := chromedp.DefaultExecAllocatorOptions[:]
 	opts = append(chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.Flag("headless", true),
@@ -54,9 +54,9 @@ func GetByChrome(urlstring string) (string, error) {
 	defer cancel()
 	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
-	//ctxwt, cancel := context.WithTimeout(ctx, timeout)
-	//defer cancel()
-	err := chromedp.Run(ctx,
+	ctxwt, cancel := context.WithTimeout(ctx, timeoutCh)
+	defer cancel()
+	err := chromedp.Run(ctxwt,
 		chromedp.Navigate(urlstring),
 		chromedp.Sleep(timeoutChromeMS*time.Millisecond),
 		chromedp.OuterHTML("html", &html),

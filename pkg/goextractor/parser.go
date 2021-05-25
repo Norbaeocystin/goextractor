@@ -29,8 +29,17 @@ func Extract(doc *goquery.Document, ids2name map[string]string) map[string][]str
 				}
 
 				if ok {
-					result = append(result, chref)
-					results[name] = result
+					// check if the link is not already added
+					alreadyAdded := false
+					for _, value := range result {
+						if value == chref {
+							alreadyAdded = true
+						}
+					}
+					if !alreadyAdded {
+						result = append(result, chref)
+						results[name] = result
+					}
 				} else {
 					results[name] = []string{
 						chref,

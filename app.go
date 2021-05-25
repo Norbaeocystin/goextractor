@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"goextractor/pkg/goextractor"
@@ -15,15 +16,26 @@ func main() {
 	url := flag.String("url", "", "url to scrap")
 	file := flag.String("file", "", "file to use to fetch urls")
 	chrome := flag.Bool("chrome",false, "use chrome ")
+	tsv := flag.Bool("tsv", false, "output as tsv - delimiter tab, default false - output will be as new line delmited json")
+	retries := flag.Int("retries", 3, "number of retries if nothing returns")
 	flag.Parse()
 	if *url != "" && *file == ""{
 		// b, _ := goextractor.GetWithHeaders("https://mdex.com/#/", goextractor.HeadersDefault)
 		var data map[string]interface{}
-		if *chrome {
-			data = goextractor.GetDataViaChrome(*url)
-		}else {
-			data = goextractor.GetData(*url)
+
+		for i := 0; i <= *retries; i++ {
+			if *chrome {
+				data = goextractor.GetDataViaChrome(*url)
+			} else {
+				data = goextractor.GetData(*url)
+			}
+
+			if len(data) == 1 && i != 3 {
+				continue
+			}
+			break
 		}
+
 		fmt.Println(data)
 		txt := goextractor.GetString([]map[string]interface{}{data})
 		fmt.Println(txt)
@@ -42,17 +54,32 @@ func main() {
 			line := scanner.Text()
 			if strings.Contains(line, "https://") || strings.Contains(line, "http://"){
 				var data map[string]interface{}
-				if *chrome {
-					data = goextractor.GetDataViaChrome(line)
-				}else {
-					data = goextractor.GetData(*url)
-				}
-				if len(data) > 0{
-					results = append(results, data)
+				// retries logic added
+				for i := 0; i <= *retries; i++ {
+					if *chrome {
+						data = goextractor.GetDataViaChrome(line)
+					} else {
+						data = goextractor.GetData(line)
+					}
+
+					if len(data) == 1 && i != 3 {
+						continue
+					}
+
+					if len(data) > 0 && *tsv {
+						results = append(results, data)
+					} else {
+						b, _ := json.Marshal(data)
+						fmt.Println(string(b))
+					}
+
+					break
 				}
 			}
 		}
-		txt := goextractor.GetString(results)
-		fmt.Println(txt)
+		if *tsv {
+			txt := goextractor.GetString(results)
+			fmt.Println(txt)
+		}
 	}
 }
