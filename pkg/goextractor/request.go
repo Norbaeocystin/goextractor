@@ -37,7 +37,7 @@ func GetWithHeaders(urlstring string, headers map[string][]string) ([]byte, erro
 }
 
 // Returns html as string - opens and close chrome
-func GetByChrome(urlstring string) (string, error) {
+func GetByChrome(urlstring string, loadingTime int) (string, error) {
 	var html string
 	//timeout in seconds
 	timeoutCh := 3 * time.Second
@@ -58,7 +58,7 @@ func GetByChrome(urlstring string) (string, error) {
 	defer cancel()
 	err := chromedp.Run(ctxwt,
 		chromedp.Navigate(urlstring),
-		chromedp.Sleep(timeoutChromeMS*time.Millisecond),
+		chromedp.Sleep(time.Duration(loadingTime)*time.Second),
 		chromedp.OuterHTML("html", &html),
 		// chromedp.Sleep(time.Hour),
 	)

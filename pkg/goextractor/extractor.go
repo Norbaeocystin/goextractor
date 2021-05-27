@@ -1,8 +1,8 @@
 package goextractor
 
 // Get Data Via Using chrome
-func GetDataViaChrome(urlstring string) map[string]interface{} {
-	s, _ := GetByChrome(urlstring)
+func GetDataViaChrome(urlstring string, loadingTime int) map[string]interface{} {
+	s, _ := GetByChrome(urlstring, loadingTime)
 	doc, _ := GetDoc([]byte(s))
 	results := Extract(doc, Ids2name)
 	data := make(map[string]interface{})

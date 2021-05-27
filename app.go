@@ -25,7 +25,7 @@ func main() {
 
 		for i := 0; i <= *retries; i++ {
 			if *chrome {
-				data = goextractor.GetDataViaChrome(*url)
+				data = goextractor.GetDataViaChrome(*url, (i +1) * 2 )
 			} else {
 				data = goextractor.GetData(*url)
 			}
@@ -57,7 +57,7 @@ func main() {
 				// retries logic added
 				for i := 0; i <= *retries; i++ {
 					if *chrome {
-						data = goextractor.GetDataViaChrome(line)
+						data = goextractor.GetDataViaChrome(line, (i +1) * 2 )
 					} else {
 						data = goextractor.GetData(line)
 					}
