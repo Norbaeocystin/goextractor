@@ -54,7 +54,7 @@ func GetByChrome(urlstring string, loadingTime int) (string, error) {
 	defer cancel()
 	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
-	ctxwt, cancel := context.WithTimeout(ctx, timeoutCh)
+	ctxwt, cancel := context.WithTimeout(ctx, time.Duration(loadingTime + 1)*time.Second)
 	defer cancel()
 	err := chromedp.Run(ctxwt,
 		chromedp.Navigate(urlstring),
